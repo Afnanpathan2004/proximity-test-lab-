@@ -1,0 +1,17 @@
+# Do not commit local env files or build artifacts
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+node_modules/
+.next/
+dist/
+.cache/
+__pycache__/
+*.pyc
+.python-version
+.DS_Store
+coverage/
+*.log
+.vscode/
+.idea/

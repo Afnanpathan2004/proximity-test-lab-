@@ -1,0 +1,23 @@
+{
+  "app": {
+    "title": "प्रॉक्सिमिटी टेस्टलैब",
+    "login": "लॉग इन",
+    "register": "रजिस्टर",
+    "logout": "लॉगआउट",
+    "create_test": "परीक्षण बनाएँ",
+    "language": "भाषा"
+  },
+  "auth": {
+    "name": "नाम",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "submit": "सबमिट"
+  },
+  "test": {
+    "title": "शीर्षक",
+    "syllabus": "पाठ्यक्रम",
+    "language": "भाषा",
+    "access_key": "एक्सेस कुंजी",
+    "create": "बनाएँ"
+  }
+}

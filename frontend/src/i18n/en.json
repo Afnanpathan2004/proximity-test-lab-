@@ -1,0 +1,23 @@
+{
+  "app": {
+    "title": "Proximity TestLab",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "create_test": "Create Test",
+    "language": "Language"
+  },
+  "auth": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Submit"
+  },
+  "test": {
+    "title": "Title",
+    "syllabus": "Syllabus",
+    "language": "Language",
+    "access_key": "Access Key",
+    "create": "Create"
+  }
+}
