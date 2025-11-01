@@ -48,46 +48,22 @@ async def generate_mcqs_async(
         "temperature": 0.4,
         "response_format": {"type": "json_object"},
     }
-    
-    try:
-        async with httpx.AsyncClient(timeout=60) as client:
-            resp = await client.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-            resp.raise_for_status()
-            data = resp.json()
-            content = data["choices"][0]["message"]["content"]
-            
-            # Try parse as object or array
-            try:
-                parsed = json.loads(content)
-                # Some models wrap under a key; accept both {items:[...] } or [...]
-                if isinstance(parsed, dict) and "items" in parsed:
-                    items = parsed["items"]
-                else:
-                    items = parsed if isinstance(parsed, list) else []
-            except Exception:
-                items = []
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 401:
-            raise HTTPException(
-                status_code=500,
-                detail="OpenAI API key is invalid. Please check your OPENAI_API_KEY configuration."
-            )
-        elif e.response.status_code == 429:
-            raise HTTPException(
-                status_code=429,
-                detail="OpenAI API rate limit exceeded. Please try again later."
-            )
-        else:
-            raise HTTPException(
-                status_code=500,
-                detail=f"OpenAI API error: {str(e)}"
-            )
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate questions: {str(e)}"
-        )
-    
+    async with httpx.AsyncClient(timeout=60) as client:
+        resp = await client.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        resp.raise_for_status()
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"]
+        # Try parse as object or array
+        try:
+            parsed = json.loads(content)
+            # Some models wrap under a key; accept both {items:[...] } or [...]
+            if isinstance(parsed, dict) and "items" in parsed:
+                items = parsed["items"]
+            else:
+                items = parsed if isinstance(parsed, list) else []
+        except Exception:
+            items = []
+
     ok, errors = validate_mcq_list(items)
     if not ok:
         # filter out invalid items instead of failing hard

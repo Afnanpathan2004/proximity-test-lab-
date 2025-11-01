@@ -6,25 +6,24 @@ from .api import tests as tests_router
 from .api import attempts as attempts_router
 from .api import reports as reports_router
 from .api import teachers as teachers_router
+from .api import users as users_router
 from .core.config import get_settings
 
 app = FastAPI(title="Proximity TestLab API", version="0.1.0")
 
 settings = get_settings()
 
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost",
+        "http://127.0.0.1",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 @app.on_event("startup")
@@ -36,6 +35,7 @@ app.include_router(tests_router.router)
 app.include_router(attempts_router.router)
 app.include_router(reports_router.router)
 app.include_router(teachers_router.router)
+app.include_router(users_router.router)
 
 @app.get("/health")
 def health():

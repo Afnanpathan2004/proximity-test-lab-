@@ -13,7 +13,7 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     name: str
-    email: EmailStr
+    email: str
     language_pref: Optional[str] = None
     role: str
 
@@ -28,5 +28,12 @@ class Token(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    language_pref: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = None

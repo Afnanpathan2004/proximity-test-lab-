@@ -1,6 +1,6 @@
 from typing import Dict, Any, Tuple
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, case
 from ..models.attempt import Attempt
 from ..models.response import Response
 from ..models.question import Question
@@ -19,7 +19,10 @@ def compute_attempt_breakdown(db: Session, attempt_id: int) -> Dict[str, Any]:
     )
     correct = db.query(Response).filter(Response.attempt_id == attempt_id, Response.correct_bool == True).count()
     by_topic = (
-        db.query(Question.topic_tag, func.avg(func.cast(Response.correct_bool, type(func.true().type))))
+        db.query(
+            Question.topic_tag,
+            func.avg(case((Response.correct_bool == True, 1), else_=0).label("correct_int")),
+        )
         .join(Response, Response.question_id == Question.id)
         .filter(Response.attempt_id == attempt_id)
         .group_by(Question.topic_tag)
@@ -45,7 +48,10 @@ def compute_class_metrics(db: Session, test_id: int) -> Dict[str, Any]:
 
     # weak topics: <50% correct on post
     by_topic_post = (
-        db.query(Question.topic_tag, func.avg(func.cast(Response.correct_bool, type(func.true().type))))
+        db.query(
+            Question.topic_tag,
+            func.avg(case((Response.correct_bool == True, 1), else_=0).label("correct_int")),
+        )
         .join(Response, Response.question_id == Question.id)
         .join(Attempt, Attempt.id == Response.attempt_id)
         .filter(Attempt.test_id == test_id, Attempt.type == "post")

